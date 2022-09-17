@@ -15,7 +15,7 @@ const TTTGameFieldRow = (props: {
         key={"singleField" + i + props.rowNumber}
         rowNumber={props.rowNumber}
         fieldType={props.row[i]}
-        fieldNumber={props.numberOfFields}
+        fieldNumber={i}
         height={props.height}
       />
     );

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { GameService, GameState } from "../services/GameService";
+import { GameService } from "../services/GameService";
+import { GameState } from "../types/GameState";
 
 function useGame(player1: string, player2: string) {
   const game = useRef<GameService>();
@@ -7,11 +8,10 @@ function useGame(player1: string, player2: string) {
     GameState.INIT
   );
   useEffect(() => {
-    console.log("in use effect");
     game.current = new GameService(player1, player2, (nextState) => {
       setCurrentGameState(nextState);
     });
-    setCurrentGameState(GameState.ACTION_PLAYER2);
+    setCurrentGameState(GameState.ACTION_PLAYER1);
   }, []);
 
   if (game.current) {
@@ -22,7 +22,7 @@ function useGame(player1: string, player2: string) {
     };
   } else {
     return {
-      currentGameState: GameState.ACTION_PLAYER1,
+      currentGameState: GameState.INIT,
       playerAction: () => {},
       gameField: [[""], [""], [""]],
     };

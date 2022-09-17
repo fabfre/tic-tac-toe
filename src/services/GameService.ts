@@ -1,23 +1,17 @@
-export enum GameState {
-  ACTION_PLAYER1,
-  ACTION_PLAYER2,
-  WON_PLAYER1,
-  WON_PLAYER2,
-  DRAW,
-  ERROR,
-  INIT,
-}
+import { GameState } from "../types/GameState";
+import { Action } from "../types/Action";
 
 export class GameService {
   player1: string;
   player2: string;
   n: number;
 
-  actionsPlayer1: Array<Array<number>>;
-  actionsPlayer2: Array<Array<number>>;
+  actionsPlayer1: Array<Action>;
+  actionsPlayer2: Array<Action>;
   gameField: Array<Array<string>>;
 
   currentGameState: GameState;
+  actionsCount: number;
 
   onNewState: (newState: GameState) => void;
 
@@ -32,27 +26,43 @@ export class GameService {
     this.onNewState = onNewState;
     this.actionsPlayer1 = [];
     this.actionsPlayer2 = [];
+    this.actionsCount = 0;
     this.currentGameState = GameState.ACTION_PLAYER1;
     this.gameField = [
       ["e", "e", "e"],
       ["e", "e", "e"],
       ["e", "e", "e"],
     ];
+
+    this.playerAction = this.playerAction.bind(this);
   }
 
-  playerAction(row: number, column: number) {
-    const action = Array(row, column);
-    // @TODO check Error
+  playerAction(action: Action) {
+    let isActionValid = this.isActionValid(action);
     let nextState = GameState.ERROR;
-    switch (this.currentGameState) {
-      case GameState.ACTION_PLAYER1:
-        this.actionsPlayer1.push(action);
-        // update gamefield
-        this.gameField[row][column] = "P1";
-        nextState = GameState.ACTION_PLAYER2;
-      case GameState.ACTION_PLAYER2:
+    if (isActionValid) {
+      switch (this.currentGameState) {
+        case GameState.ACTION_PLAYER1:
+          this.actionsPlayer1.push(action);
+          // update gamefield
+          this.gameField[action.row][action.column] = "P1";
+          nextState = GameState.ACTION_PLAYER2;
+          break;
+        case GameState.ACTION_PLAYER2:
+          this.actionsPlayer2.push(action);
+          // update gamefield
+          this.gameField[action.row][action.column] = "P2";
+          nextState = GameState.ACTION_PLAYER1;
+          break;
+      }
     }
-
+    // @TODO check if game has finished
+    this.currentGameState = nextState;
     this.onNewState(nextState);
+  }
+
+  isActionValid(action: Action) {
+    const allActions = this.actionsPlayer1.concat(this.actionsPlayer2);
+    return allActions.includes(action) === false;
   }
 }
