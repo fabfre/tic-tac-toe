@@ -36,7 +36,7 @@ export class GameService {
     ];
 
     this.playerAction = this.playerAction.bind(this);
-    this.isGameFinished = this.isGameFinished.bind(this);
+    this.checkFinishGameState = this.checkFinishGameState.bind(this);
   }
 
   playerAction(action: Action) {
@@ -58,8 +58,10 @@ export class GameService {
           break;
       }
     }
-    // @TODO check if game has finished
-    const isGameFinished = this.isGameFinished();
+    const checkFinishGameState = this.checkFinishGameState();
+    if (this.isGameGameFinished(checkFinishGameState)) {
+      nextState = checkFinishGameState;
+    }
     this.currentGameState = nextState;
     this.onNewState(nextState);
   }
@@ -73,29 +75,33 @@ export class GameService {
     );
   }
 
-  isGameFinished() {
+  isGameGameFinished(gameState: GameState) {
+    if (gameState === GameState.WON_PLAYER1) return true;
+    if (gameState === GameState.WON_PLAYER2) return true;
+    if (gameState === GameState.DRAW) return true;
+    return false;
+  }
+
+  checkFinishGameState() {
     // player 1 has won
     const player1Won = this.hasPlayerWon(this.actionsPlayer1);
-    console.log("player1Won", player1Won);
+    if (player1Won) return GameState.WON_PLAYER1;
 
     const player2Won = this.hasPlayerWon(this.actionsPlayer2);
-    console.log("player2Won", player2Won);
+    if (player2Won) return GameState.WON_PLAYER2;
 
     // draw
     const isDraw =
       this.actionsPlayer1.concat(this.actionsPlayer2).length ===
       this.n * this.n;
+    if (isDraw) return GameState.DRAW;
   }
 
   hasPlayerWon(playerActions: Action[]) {
     if (playerActions.length < 3) return false;
 
     // player has n in one row
-    const sortedPlayerActionsRow = Array.from(
-      { length: this.n },
-      (_, index) => index + 1
-    ).map((i) => 0);
-
+    const sortedPlayerActionsRow = Array.from({ length: this.n }, (_) => 0);
     const sortedPlayerActionsColumn = [...sortedPlayerActionsRow];
 
     playerActions.forEach((a) => {
@@ -115,6 +121,25 @@ export class GameService {
     const wonThroughColumn =
       sortedPlayerActionsColumn.find((a) => a === this.n) > 0;
     if (wonThroughColumn) return true;
+
+    // player won through diagonals
+    const diagonalActionsLeftTopToRightBottom: Action[] = [];
+    playerActions.forEach((action) => {
+      if (action.row == action.column) {
+        diagonalActionsLeftTopToRightBottom.push(action);
+      }
+    });
+    if (diagonalActionsLeftTopToRightBottom.length === this.n) return true;
+
+    const diagonalActionsRightTopToLeftBottom: Action[] = [];
+
+    for (let i = 0; i < this.n; i++) {
+      const playedAction = playerActions.find(
+        (action) => action.row === i && action.column === this.n - 1 - i
+      );
+      if (playedAction) diagonalActionsRightTopToLeftBottom.push(playedAction);
+    }
+    if (diagonalActionsRightTopToLeftBottom.length === this.n) return true;
 
     return false;
   }
