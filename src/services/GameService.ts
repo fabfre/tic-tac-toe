@@ -39,7 +39,7 @@ export class GameService {
 
   playerAction(action: Action) {
     let isActionValid = this.isActionValid(action);
-    let nextState = GameState.ERROR;
+    let nextState = this.currentGameState;
     if (isActionValid) {
       switch (this.currentGameState) {
         case GameState.ACTION_PLAYER1:
@@ -63,6 +63,11 @@ export class GameService {
 
   isActionValid(action: Action) {
     const allActions = this.actionsPlayer1.concat(this.actionsPlayer2);
-    return allActions.includes(action) === false;
+    return (
+      allActions.findIndex(
+        ($0) => $0.row == action.row && $0.column == action.column
+      ) === -1
+    );
+  }
   }
 }
