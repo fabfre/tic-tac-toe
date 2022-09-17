@@ -27,6 +27,7 @@ export class GameService {
     this.actionsPlayer1 = [];
     this.actionsPlayer2 = [];
     this.actionsCount = 0;
+    this.n = 3;
     this.currentGameState = GameState.ACTION_PLAYER1;
     this.gameField = [
       ["e", "e", "e"],
@@ -35,6 +36,7 @@ export class GameService {
     ];
 
     this.playerAction = this.playerAction.bind(this);
+    this.isGameFinished = this.isGameFinished.bind(this);
   }
 
   playerAction(action: Action) {
@@ -57,6 +59,7 @@ export class GameService {
       }
     }
     // @TODO check if game has finished
+    const isGameFinished = this.isGameFinished();
     this.currentGameState = nextState;
     this.onNewState(nextState);
   }
@@ -69,5 +72,45 @@ export class GameService {
       ) === -1
     );
   }
+
+  isGameFinished() {
+    // player 1 has won
+    const player1Won = this.hasPlayerWon(this.actionsPlayer1);
+
+    console.log("player1Won", player1Won);
+
+    // player 2 has won
+    // draw
+  }
+
+  hasPlayerWon(playerActions: Action[]) {
+    if (playerActions.length < 3) return false;
+
+    // player has n in one row
+    const sortedPlayerActionsRow = Array.from(
+      { length: this.n },
+      (_, index) => index + 1
+    ).map((i) => 0);
+
+    const sortedPlayerActionsColumn = [...sortedPlayerActionsRow];
+
+    playerActions.forEach((a) => {
+      const key = a.row;
+      sortedPlayerActionsRow[key]++;
+    });
+
+    const wonThroughRow = sortedPlayerActionsRow.find((a) => a === 3) > 0;
+    if (wonThroughRow) return true;
+
+    // player has n in one column
+    playerActions.forEach((a) => {
+      const key = a.column;
+      sortedPlayerActionsColumn[key]++;
+    });
+
+    const wonThroughColumn = sortedPlayerActionsColumn.find((a) => a === 3) > 0;
+    if (wonThroughColumn) return true;
+
+    return false;
   }
 }
