@@ -76,11 +76,15 @@ export class GameService {
   isGameFinished() {
     // player 1 has won
     const player1Won = this.hasPlayerWon(this.actionsPlayer1);
-
     console.log("player1Won", player1Won);
 
-    // player 2 has won
+    const player2Won = this.hasPlayerWon(this.actionsPlayer2);
+    console.log("player2Won", player2Won);
+
     // draw
+    const isDraw =
+      this.actionsPlayer1.concat(this.actionsPlayer2).length ===
+      this.n * this.n;
   }
 
   hasPlayerWon(playerActions: Action[]) {
@@ -99,7 +103,7 @@ export class GameService {
       sortedPlayerActionsRow[key]++;
     });
 
-    const wonThroughRow = sortedPlayerActionsRow.find((a) => a === 3) > 0;
+    const wonThroughRow = sortedPlayerActionsRow.find((a) => a === this.n) > 0;
     if (wonThroughRow) return true;
 
     // player has n in one column
@@ -108,7 +112,8 @@ export class GameService {
       sortedPlayerActionsColumn[key]++;
     });
 
-    const wonThroughColumn = sortedPlayerActionsColumn.find((a) => a === 3) > 0;
+    const wonThroughColumn =
+      sortedPlayerActionsColumn.find((a) => a === this.n) > 0;
     if (wonThroughColumn) return true;
 
     return false;
