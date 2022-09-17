@@ -5,6 +5,7 @@ const TTTGameSingleField = (props: {
   rowNumber: number;
   fieldNumber: number;
   height: number;
+  fieldType: string;
 }): React.ReactElement => {
   return (
     <TouchableOpacity>
@@ -17,7 +18,9 @@ const TTTGameSingleField = (props: {
           styles.fieldContainer,
         ]}
       >
-        <Text style={styles.textStyle}>❌</Text>
+        <Text style={styles.textStyle}>
+          {props.fieldType === "e" ? "" : props.fieldType === "P1" ? "❌" : "O"}
+        </Text>
       </View>
     </TouchableOpacity>
   );

@@ -5,18 +5,19 @@ import TTTGameFieldRow from "./TTTGameFieldRow";
 const FIELDHEIHGT = 64;
 
 type TTTGameFieldProps = {
-  n: number;
+  gameField: Array<Array<string>>;
 };
 
 const TTTGameField = (props: TTTGameFieldProps): React.ReactElement => {
   const fieldRowsArray = [];
-  for (let i = 0; i < props.n; i++) {
+  for (let i = 0; i < props.gameField.length; i++) {
     fieldRowsArray.push(
       <TTTGameFieldRow
         height={FIELDHEIHGT}
         key={"row" + i}
+        row={props.gameField[i]}
         rowNumber={i}
-        numberOfFields={props.n}
+        numberOfFields={props.gameField.length}
       />
     );
   }
@@ -25,7 +26,7 @@ const TTTGameField = (props: TTTGameFieldProps): React.ReactElement => {
       style={[
         styles.playfieldContainer,
         {
-          height: (FIELDHEIHGT + 2) * props.n,
+          height: (FIELDHEIHGT + 2) * props.gameField.length,
         },
       ]}
     >

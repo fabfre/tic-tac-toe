@@ -6,6 +6,7 @@ const TTTGameFieldRow = (props: {
   height: number;
   rowNumber: number;
   numberOfFields: number;
+  row: Array<string>;
 }): React.ReactElement => {
   const fieldsArray = [];
   for (let i = 0; i < props.numberOfFields; i++) {
@@ -13,6 +14,7 @@ const TTTGameFieldRow = (props: {
       <TTTGameSingleField
         key={"singleField" + i + props.rowNumber}
         rowNumber={props.rowNumber}
+        fieldType={props.row[i]}
         fieldNumber={props.numberOfFields}
         height={props.height}
       />
