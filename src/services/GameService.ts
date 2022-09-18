@@ -29,12 +29,12 @@ export class GameService {
     this.actionsPlayer2 = [];
     this.actionsCount = 0;
     this.n = 3;
-    this.currentGameState = GameState.ACTION_PLAYER1;
     this.gameField = Array.from({ length: this.n }, (_) =>
       Array.from({ length: this.n }, (_) => GamefieldElement.Empty)
     );
 
     this.playerAction = this.playerAction.bind(this);
+    this.updateCurrentGameState(GameState.ACTION_PLAYER1);
   }
 
   public playerAction(action: Action) {

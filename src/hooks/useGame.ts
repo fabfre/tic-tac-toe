@@ -16,7 +16,6 @@ function useGame(player1: string, player2: string) {
     game.current = new GameService(player1, player2, (nextState) => {
       setCurrentGameState(nextState);
     });
-    setCurrentGameState(GameState.ACTION_PLAYER1);
   };
 
   if (game.current) {
