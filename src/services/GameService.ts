@@ -59,7 +59,7 @@ export class GameService {
       }
     }
     const checkFinishGameState = this.checkFinishGameState();
-    if (this.isGameGameFinished(checkFinishGameState)) {
+    if (isGameGameFinished(checkFinishGameState)) {
       nextState = checkFinishGameState;
     }
     this.currentGameState = nextState;
@@ -73,13 +73,6 @@ export class GameService {
         ($0) => $0.row == action.row && $0.column == action.column
       ) === -1
     );
-  }
-
-  isGameGameFinished(gameState: GameState) {
-    if (gameState === GameState.WON_PLAYER1) return true;
-    if (gameState === GameState.WON_PLAYER2) return true;
-    if (gameState === GameState.DRAW) return true;
-    return false;
   }
 
   checkFinishGameState() {
@@ -144,3 +137,10 @@ export class GameService {
     return false;
   }
 }
+
+export const isGameGameFinished = (gameState: GameState) => {
+  if (gameState === GameState.WON_PLAYER1) return true;
+  if (gameState === GameState.WON_PLAYER2) return true;
+  if (gameState === GameState.DRAW) return true;
+  return false;
+};

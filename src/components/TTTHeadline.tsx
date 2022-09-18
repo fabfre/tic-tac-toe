@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, TextProps } from "react-native";
+import { StyleSheet, Text, TextProps } from "react-native";
 
 interface TTTHeadlineProps extends TextProps {
   text: string;
@@ -7,13 +7,19 @@ interface TTTHeadlineProps extends TextProps {
 
 const TTTHeadline = (props: TTTHeadlineProps) => {
   return (
-    <Text
-      {...props}
-      style={[{ fontSize: 24, textAlign: "center" }, props.style]}
-    >
+    <Text {...props} style={[styles.defaultText, props.style]}>
       {props.text}
     </Text>
   );
 };
+
+const styles = StyleSheet.create({
+  defaultText: {
+    marginTop: 8,
+    marginBottom: 16,
+    fontSize: 24,
+    textAlign: "center",
+  },
+});
 
 export default TTTHeadline;

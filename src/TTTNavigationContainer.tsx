@@ -6,7 +6,7 @@ import TTTGameScreen from "./screens/Game/TTTGameScreen";
 
 export type NavigatorParamList = {
   home: undefined;
-  game: undefined;
+  game: { player1: string; player2: string };
 };
 
 const RootStack = createNativeStackNavigator<NavigatorParamList>();
@@ -15,8 +15,16 @@ const TTTNavigationContainer = () => {
   return (
     <NavigationContainer>
       <RootStack.Navigator>
-        <RootStack.Screen name="home" component={TTTHomeScreen} />
-        <RootStack.Screen name="game" component={TTTGameScreen} />
+        <RootStack.Screen
+          name="home"
+          options={{ headerTitle: "Neues Spiel" }}
+          component={TTTHomeScreen}
+        />
+        <RootStack.Screen
+          options={{ headerTitle: "Tic Tac Toe" }}
+          name="game"
+          component={TTTGameScreen}
+        />
       </RootStack.Navigator>
     </NavigationContainer>
   );

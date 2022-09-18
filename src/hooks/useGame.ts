@@ -8,23 +8,29 @@ function useGame(player1: string, player2: string) {
     GameState.INIT
   );
   useEffect(() => {
+    startNewGame();
+  }, []);
+
+  const startNewGame = () => {
     game.current = new GameService(player1, player2, (nextState) => {
       setCurrentGameState(nextState);
     });
     setCurrentGameState(GameState.ACTION_PLAYER1);
-  }, []);
+  };
 
   if (game.current) {
     return {
       currentGameState,
       playerAction: game.current.playerAction,
       gameField: game.current.gameField,
+      startNewGame: startNewGame,
     };
   } else {
     return {
       currentGameState: GameState.INIT,
       playerAction: () => {},
       gameField: [[""], [""], [""]],
+      startNewGame: startNewGame,
     };
   }
 }
