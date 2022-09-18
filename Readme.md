@@ -1,12 +1,8 @@
 # TIC-TAC-TOE React Native App
 
----
-
 Written by Fabian Frey
 
 ## How to start
-
----
 
 To start the app, expo-cli must be installed. 
 After that just use following commands in the project folder
@@ -17,8 +13,6 @@ npx expo start
 ```
 
 ## Architecture
-
----
 
 The app demonstrates the separation of React View Components and business logic. 
 The logic of the game tic-tac-toe is written in the ```GameService.ts``` class.
@@ -47,8 +41,6 @@ to test any business logic.
 The prefix TTT is short for TicTacToe.
 
 ## Screenshots
-
---- 
 
 <img src="assets/screen1.png" width="200">
 <img src="assets/screen2.png" width="200">
