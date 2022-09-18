@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { GameService } from "../services/GameService";
 import { GameState } from "../types/GameState";
+import { GamefieldElement } from "../types/GamefieldElement";
 
 function useGame(player1: string, player2: string) {
   const game = useRef<GameService>();
@@ -29,7 +30,11 @@ function useGame(player1: string, player2: string) {
     return {
       currentGameState: GameState.INIT,
       playerAction: () => {},
-      gameField: [[""], [""], [""]],
+      gameField: [
+        [GamefieldElement.Empty],
+        [GamefieldElement.Empty],
+        [GamefieldElement.Empty],
+      ],
       startNewGame: startNewGame,
     };
   }

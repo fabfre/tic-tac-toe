@@ -1,17 +1,18 @@
 import { GameState } from "../types/GameState";
 import { Action } from "../types/Action";
+import { GamefieldElement } from "../types/GamefieldElement";
 
 export class GameService {
-  player1: string;
-  player2: string;
-  n: number;
+  private player1: string;
+  private player2: string;
+  private n: number;
 
-  actionsPlayer1: Array<Action>;
-  actionsPlayer2: Array<Action>;
+  private actionsPlayer1: Array<Action>;
+  private actionsPlayer2: Array<Action>;
   gameField: Array<Array<string>>;
 
-  currentGameState: GameState;
-  actionsCount: number;
+  private currentGameState: GameState;
+  private actionsCount: number;
 
   onNewState: (newState: GameState) => void;
 
@@ -29,31 +30,29 @@ export class GameService {
     this.actionsCount = 0;
     this.n = 3;
     this.currentGameState = GameState.ACTION_PLAYER1;
-    this.gameField = [
-      ["e", "e", "e"],
-      ["e", "e", "e"],
-      ["e", "e", "e"],
-    ];
+    this.gameField = Array.from({ length: this.n }, (_) =>
+      Array.from({ length: this.n }, (_) => GamefieldElement.Empty)
+    );
 
     this.playerAction = this.playerAction.bind(this);
-    this.checkFinishGameState = this.checkFinishGameState.bind(this);
   }
 
-  playerAction(action: Action) {
+  public playerAction(action: Action) {
     let isActionValid = this.isActionValid(action);
     let nextState = this.currentGameState;
     if (isActionValid) {
+      this.actionsCount++;
       switch (this.currentGameState) {
         case GameState.ACTION_PLAYER1:
           this.actionsPlayer1.push(action);
           // update gamefield
-          this.gameField[action.row][action.column] = "P1";
+          this.gameField[action.row][action.column] = GamefieldElement.P1;
           nextState = GameState.ACTION_PLAYER2;
           break;
         case GameState.ACTION_PLAYER2:
           this.actionsPlayer2.push(action);
           // update gamefield
-          this.gameField[action.row][action.column] = "P2";
+          this.gameField[action.row][action.column] = GamefieldElement.P2;
           nextState = GameState.ACTION_PLAYER1;
           break;
       }
@@ -62,11 +61,15 @@ export class GameService {
     if (isGameGameFinished(checkFinishGameState)) {
       nextState = checkFinishGameState;
     }
-    this.currentGameState = nextState;
-    this.onNewState(nextState);
+    this.updateCurrentGameState(nextState);
   }
 
-  isActionValid(action: Action) {
+  private updateCurrentGameState(newGameState: GameState) {
+    this.currentGameState = newGameState;
+    this.onNewState(newGameState);
+  }
+
+  private isActionValid(action: Action) {
     const allActions = this.actionsPlayer1.concat(this.actionsPlayer2);
     return (
       allActions.findIndex(
@@ -75,7 +78,7 @@ export class GameService {
     );
   }
 
-  checkFinishGameState() {
+  private checkFinishGameState() {
     // player 1 has won
     const player1Won = this.hasPlayerWon(this.actionsPlayer1);
     if (player1Won) return GameState.WON_PLAYER1;
@@ -90,49 +93,29 @@ export class GameService {
     if (isDraw) return GameState.DRAW;
   }
 
-  hasPlayerWon(playerActions: Action[]) {
+  private hasPlayerWon(playerActions: Action[]) {
     if (playerActions.length < 3) return false;
 
-    // player has n in one row
-    const sortedPlayerActionsRow = Array.from({ length: this.n }, (_) => 0);
-    const sortedPlayerActionsColumn = [...sortedPlayerActionsRow];
-
-    playerActions.forEach((a) => {
-      const key = a.row;
-      sortedPlayerActionsRow[key]++;
-    });
-
-    const wonThroughRow = sortedPlayerActionsRow.find((a) => a === this.n) > 0;
+    //player has n in one row
+    const wonThroughRow = isStraightWin(playerActions, "row", this.n);
     if (wonThroughRow) return true;
 
     // player has n in one column
-    playerActions.forEach((a) => {
-      const key = a.column;
-      sortedPlayerActionsColumn[key]++;
-    });
-
-    const wonThroughColumn =
-      sortedPlayerActionsColumn.find((a) => a === this.n) > 0;
+    const wonThroughColumn = isStraightWin(playerActions, "column", this.n);
     if (wonThroughColumn) return true;
 
     // player won through diagonals
-    const diagonalActionsLeftTopToRightBottom: Action[] = [];
-    playerActions.forEach((action) => {
-      if (action.row == action.column) {
-        diagonalActionsLeftTopToRightBottom.push(action);
-      }
-    });
-    if (diagonalActionsLeftTopToRightBottom.length === this.n) return true;
+    const diagonalTopLeftBottomRightWin = isDiagonalTopLeftBottomRightWin(
+      playerActions,
+      this.n
+    );
+    if (diagonalTopLeftBottomRightWin) return true;
 
-    const diagonalActionsRightTopToLeftBottom: Action[] = [];
-
-    for (let i = 0; i < this.n; i++) {
-      const playedAction = playerActions.find(
-        (action) => action.row === i && action.column === this.n - 1 - i
-      );
-      if (playedAction) diagonalActionsRightTopToLeftBottom.push(playedAction);
-    }
-    if (diagonalActionsRightTopToLeftBottom.length === this.n) return true;
+    const diagonalTopRightBottomLeftWin = isDiagonalTopRightBottomLeftWin(
+      playerActions,
+      this.n
+    );
+    if (diagonalTopRightBottomLeftWin) return true;
 
     return false;
   }
@@ -144,3 +127,46 @@ export const isGameGameFinished = (gameState: GameState) => {
   if (gameState === GameState.DRAW) return true;
   return false;
 };
+
+export function isStraightWin(
+  playerActions: Action[],
+  type: "row" | "column",
+  n: number
+) {
+  const sortedPlayerActions = Array.from({ length: n }, (_) => 0);
+  playerActions.forEach((a) => {
+    const key = a[type];
+    sortedPlayerActions[key]++;
+  });
+  const won = sortedPlayerActions.find((a) => a === n) > 0;
+  return won;
+}
+
+export function isDiagonalTopLeftBottomRightWin(
+  playerActions: Action[],
+  n: number
+) {
+  const diagonalActions: Action[] = [];
+  playerActions.forEach((action) => {
+    if (action.row == action.column) {
+      diagonalActions.push(action);
+    }
+  });
+  const isWon = diagonalActions.length === n;
+  return isWon;
+}
+
+export function isDiagonalTopRightBottomLeftWin(
+  playerActions: Action[],
+  n: number
+) {
+  const diagonalActions: Action[] = [];
+
+  for (let i = 0; i < n; i++) {
+    const playedAction = playerActions.find(
+      (action) => action.row === i && action.column === n - 1 - i
+    );
+    if (playedAction) diagonalActions.push(playedAction);
+  }
+  return diagonalActions.length === n;
+}

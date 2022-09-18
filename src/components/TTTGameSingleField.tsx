@@ -1,12 +1,13 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import GameContext from "../contexts/GameContext";
+import { GamefieldElement } from "../types/GamefieldElement";
 
 const TTTGameSingleField = (props: {
   rowNumber: number;
   fieldNumber: number;
   height: number;
-  fieldType: string;
+  fieldType: GamefieldElement;
 }): React.ReactElement => {
   return (
     <GameContext.Consumer>
@@ -29,9 +30,9 @@ const TTTGameSingleField = (props: {
             ]}
           >
             <Text style={styles.textStyle}>
-              {props.fieldType === "P2"
+              {props.fieldType === GamefieldElement.P2
                 ? "⭕"
-                : props.fieldType === "P1"
+                : props.fieldType === GamefieldElement.P1
                 ? "❌"
                 : ""}
             </Text>
